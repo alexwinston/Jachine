@@ -39,8 +39,6 @@ Example
 			$("#reset").click(function () { $.jachine.start("s1"); });
 		});
 	</script>
-	<script id="template" type="text/x-jquery-tmpl">
-	</script>
 </head> 
 <body> 
 	<div>

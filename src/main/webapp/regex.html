@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>jQuery State Machine (Jachine) Demos</title>
+
+	<script src="http://code.jquery.com/jquery-1.4.3.min.js"></script>
+	<script src="js/jquery.jachine-3.0.js"></script>
+	<script>
+		$(document).ready(function() {
+			// Initialize the deterministic finite automaton (DFA) state machine example
+			$.jachine
+				.callbacks({
+					started: function(state, context) { },
+					executing: function(action, state, context) { },
+					executed: function(action, state, context) { },
+					stopped: function(state, context) { },
+					error: function(message) { alert(message); },
+					_default: { transition: "0"}})
+				.state("0", {
+					actions: {
+						"a": { transition: "1"},
+						_default: { transition: "0"}}})
+				.state("1", {
+					actions: {
+						"a": { transition: "2"},
+						"b": { transition: "0"}}})
+				.state("2", {
+					actions: {
+						"a": { transition: "2"},
+						"b": { transition: "3"}}})
+				.state("3", {
+					actions: {
+						"a": { transition: "4"},
+						"b": { transition: "0"}}})
+				.state("4", {
+					actions: {
+						"a": { transition: "5"},
+						"b": { transition: "0"}}})
+				.state("5", {
+					actions: {
+						"a": { transition: "6"},
+						"b": { transition: "3"}}})
+				.state("6", {
+					actions: {
+						"a": { transition: "2"},
+						"b": { transition: "7"}}})
+				.state("7", {
+					actions: {
+						"a": { transition: "4"},
+						"b": { transition: "matched"}}})
+				.state("matched", {
+					actions: {
+						_default: { transition: "matched"}}});
+			
+			$("#submit").click(function () {
+				$.jachine.start("0");
+				
+				var regex = $("#regex").val();
+				for (x = 0; x < regex.length; x++) {
+					$.jachine.execute(regex.charAt(x));
+				}
+				
+				$("#result").text($.jachine.state() == "matched" ? "matched" : "unmatched");
+			});
+		});
+	</script>
+	<script id="template" type="text/x-jquery-tmpl">
+	</script>
+</head> 
+<body> 
+	<div>
+		<input id="regex" type="text">
+		<input id="submit" type="button" value="Contains 'aabaaabb'?">
+		<span id="result"></span>
+	</div>
+</body>
+</html>

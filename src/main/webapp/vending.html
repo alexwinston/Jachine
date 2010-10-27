@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>jQuery State Machine (Jachine) Demos</title>
+
+	<script src="http://code.jquery.com/jquery-1.4.3.min.js"></script>
+	<script src="js/jquery.jachine-3.0.js"></script>
+	<script>
+		$(document).ready(function() {
+			// http://accad.osu.edu/~pgerstma/class/vnv/examples/fsm/cokeMachine.pdf
+			$.jachine
+				.state("0¢", {
+					callbacks: { entered: function() { alert("Entered state 0¢"); $("#result").text(""); }},
+					actions: {
+						"5¢": { transition: "5¢", execute: function(context) { $("#result").text("Deposited 5¢"); }},
+						"10¢": { transition: "10¢", execute: function(context) { $("#result").text("Deposited 10¢"); }},
+						_default: { transition: "0¢" }}})
+				.state("5¢", {
+					actions: {
+						"5¢": { transition: "10¢", execute: function(context) { $("#result").text("Deposited 5¢"); }},
+						"10¢": { transition: "10¢", execute: function(context) { $("#result").text("Returned 5¢"); }},
+						"reset": { transition: "0¢", execute: function(context) { $("#result").text("Returned 5¢"); }},
+						_default: { transition: "5¢" }}})
+				.state("10¢", {
+					actions: {
+						"5¢": { transition: "10¢", execute: function(context) { $("#result").text("Returned 5¢"); }},
+						"10¢": { transition: "10¢", execute: function(context) { $("#result").text("Returned 10¢"); }},
+						"reset": { transition: "0¢", execute: function(context) { $("#result").text("Returned 10¢"); }},
+						"buy": { transition: "0¢", execute: function(context) { $("#result").text("Dispensed Soda"); }},
+						_default: { transition: "10¢" }}})		
+				.start("0¢");
+			
+			$("#nickel,#dime,#buy,#reset").click(function () {
+				$.jachine.execute($(this).val());
+			});
+		});
+	</script>
+	<script id="template" type="text/x-jquery-tmpl">
+	</script>
+</head> 
+<body> 
+	<div>
+		<input id="nickel" type="button" value="5¢">
+		<input id="dime" type="button" value="10¢">
+		<input id="buy" type="button" value="buy">
+		<input id="reset" type="button" value="reset">
+		<span id="result"></span>
+	</div>
+</body>
+</html>

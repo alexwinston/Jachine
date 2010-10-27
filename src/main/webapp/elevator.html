@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>jQuery State Machine (Jachine) Demos</title>
+
+	<style>
+		.on { background: yellow; }
+		.off { background: white; }
+	</style>
+	
+	<script src="http://code.jquery.com/jquery-1.4.3.min.js"></script>
+	<script src="js/jquery.jachine-3.0.js"></script>
+	<script>
+		$(document).ready(function() {
+			// http://www.cs.princeton.edu/courses/archive/spr06/cos116/FSM_Tutorial.pdf
+			$.jachine
+				.callbacks({
+					error: function(message) { alert(message); }})
+				.state("1", {
+					callbacks: {
+						entered: function() { $("#floor1").attr("class", "on"); },
+						exited: function() { $("#floor1").attr("class", "off"); }},
+					actions: {
+						"up": { transition: "2", // TODO Test if "down"
+							execute: function(action, state, context) { $(context).val("down"); }}}})
+				.state("2", {
+					callbacks: {
+						entered: function() { $("#floor2").attr("class", "on"); },
+						exited: function() { $("#floor2").attr("class", "off"); }},
+					actions: {
+						"down": { transition: "1", // TODO Test if "up"
+							execute: function(action, state, context) { $(context).val("up"); }}}})
+				.start("1");
+			
+			$("#button").click(function () {
+				$.jachine.execute($(this).val(), this);
+			});
+		});
+	</script>
+	<script id="template" type="text/x-jquery-tmpl">
+	</script>
+</head> 
+<body> 
+	<div>
+		<input id="button" style="float:left;" type="button" value="up">
+		<div id="floor1" style="float:left; border:1px solid red;">-1-</div>
+		<div id="floor2" style="float:left; border:1px solid green;">-2-</div>
+	</div>
+</body>
+</html>

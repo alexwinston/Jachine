@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>jQuery Mobile: Demos and Documentation</title>
+	<link media="screen" rel="stylesheet" href="css/colorbox-1.3.12.css" />
+	<style>
+		.question { display: none; }
+		.message { display: none; }
+	</style>
+	<script src="http://code.jquery.com/jquery-1.4.3.min.js"></script>
+	<script src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
+	<script src="js/jquery.colorbox-1.3.12.min.js"></script>
+	<script src="js/jquery.jachine-3.0.js"></script>
+	<script>
+		$(document).ready(function() {
+			// Initialize the questions state machine
+			$.jachine
+				.callbacks({
+					started: function(state, context) {
+						// The questionnaire has started so show the first question
+						$("#question1").show(); },
+					execute: function(action, state, context) { alert($.jachine.state()); },
+					entered: function(state, fromState, context) {
+						// Hide the question that was just answered, could use fromState instead
+						$(context).parents().eq(1).hide();
+						// Show the next question using the id for the state being transferred to
+						$("#" + state).show(); },
+					stopped: function(state, context) {
+						// The questionnaire was stopped so hide all the questions and messages
+						$(".question,.message").hide(); },
+					error: function(message) { alert (message); }})
+				.state("question1", { actions: {
+					"yes": { transition: "question2", execute: function() { alert("yes"); }},
+					"no": { transition: function() { return "question3"; }, execute: function() { alert("no"); }}}})
+				.state("question2", { actions: {
+					"yes": { transition: "question5" },
+					"no": { transition: "message3" }}})
+				.state("question3", { actions: {
+					"yes": { transition: "question4" },
+					"no": { transition: "message4" }}})
+				.state("question4", { actions: {
+					"yes": { transition: "question8" },
+					"no": { transition: "message3" }}})
+				.state("question5", { actions: {
+					"yes": { transition: "question6" },
+					"no": { transition: "message3" }}})
+				.state("question6", { actions: {
+					"yes": { transition: "message1" },
+					"no": { transition: "question7" }}})
+				.state("question7", { actions: {
+					"yes": { transition: "message2" },
+					"no": { transition: "question8" }}})
+				.state("question8", { actions: {
+					"yes": { transition: "message2" },
+					"no": { transition: "message3" }}});
+			
+			// Initialize the questions as a modal dialog
+			$("#begin").colorbox({
+				transition: "none",
+				title: "Influenza Questionnaire",
+				width: "50%",
+				height: "50%",
+				inline: true,
+				href: "#questions",
+				onCleanup: function() {
+					$.jachine.stop(); }});
+			// Show the first question 
+			$("#begin").click(function() { 
+				$.jachine.start("question1"); });
+
+			// Add the yes/no buttons template to the questions
+			$("#yes-no-template").tmpl().appendTo(".question");
+			
+			// Add the yes/no click logic
+			$(".yes,.no").click(function() {
+				// Trigger the state transition for the button's class and "this" as the context
+				$.jachine.execute($(this).attr("class"), this);
+			});
+		});
+	</script>
+	<script id="yes-no-template" type="text/x-jquery-tmpl">
+		<div>
+			<input class="yes" type="button" value="Yes">
+			<input class="no" type="button" value="No">
+		</div>
+	</script>
+</head> 
+<body> 
+	<div>
+		<a id="begin" href="#questions">Begin</a>
+		<div id="questions">
+			<div id="question1" class="question">Do you think you might have the flu?</div>
+			<div id="question2" class="question">Have you had fever &gt; 100.4&deg; F in the past 24 hours?</div>
+			<div id="question3" class="question">Have you been exposed to a person with the flu?</div>
+			<div id="question4" class="question">Has it been less than 2 days since you were exposed?</div>
+			<div id="question5" class="question">
+				Any of the following:
+				<ul>
+					<li>Cough</li>
+					<li>Sore Throat</li>
+					<li>Runny Nose</li>
+					<li>Muscle Aches</li>
+					<li>Chills</li>
+				</ul>
+			</div>
+			<div id="question6" class="question">
+				Any of the following:
+				<ul>
+					<li>Hard to Breathe</li>
+					<li>Pain or Pressure in the Chest</li>
+					<li>Sudden Dizziness, Feel Like Going to Pass Out</li>
+					<li>Confusion</li>
+					<li>Unable to Keep Food or Liquids Down</li>
+					<li>Symptoms Improved, but Now Worse</li>
+				</ul>
+			</div>
+			<div id="question7" class="question">Have symptoms been present for less than 2 days?</div>
+			<div id="question8" class="question">
+				Any of the following:
+				<ul>
+					<li>Pregnant</li>
+					<li>Age 65 Years or Older</li>
+					<li>Diabetes</li>
+					<li>Heart Disease</li>
+					<li>Lung Disease</li>
+					<li>Suppressed Immune System</li>
+				</ul>
+			</div>
+			<div id="message1" class="message">Message 1</div>
+			<div id="message2" class="message">Message 2</div>
+			<div id="message3" class="message">Message 3</div>
+			<div id="message4" class="message">Message 4</div>
+		</div>
+	</div>
+</body>
+</html>

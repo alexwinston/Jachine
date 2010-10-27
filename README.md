@@ -5,11 +5,8 @@ Jachine is a simple jQuery finite state machine. Samples are provided in the src
 
 Example
 -------
-<!DOCTYPE html>
 <html>
 <head>
-	<title>jQuery State Machine (Jachine) Demo</title>
-
 	<script src="http://code.jquery.com/jquery-1.4.3.min.js"></script>
 	<script src="js/jquery.jachine-3.0.js"></script>
 	<script>
